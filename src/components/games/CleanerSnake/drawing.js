@@ -1,3 +1,5 @@
+import { asset } from '../../../lib/basePath';
+
 export const COLS = 8;
 export const ROWS = 8;
 export const CELL = 60;
@@ -64,8 +66,8 @@ function loadImage(src) {
 
 export function loadAssets() {
     return Promise.all([
-        loadImage('/cleaner.png'),
-        ...FOOTPRINT_FILES.map((name) => loadImage(`/footprints/${name}.png`)),
+        loadImage(asset('/cleaner.png')),
+        ...FOOTPRINT_FILES.map((name) => loadImage(asset(`/footprints/${name}.png`))),
     ]).then(([cleaner, ...prints]) => {
         cleanerImg = cleaner;
         footprints.length = 0;

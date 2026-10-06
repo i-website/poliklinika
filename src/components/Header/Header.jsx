@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import styles from './Header.module.scss';
 
@@ -48,7 +49,7 @@ export default function Header() {
             />
             <nav className={`${styles.menu} ${open ? styles.menuOpen : ''}`} aria-hidden={!open}>
                 {MENU_ITEMS.map((item) => (
-                    <a
+                    <Link
                         key={item.label}
                         href={item.href}
                         className={styles.link}
@@ -56,7 +57,7 @@ export default function Header() {
                         onClick={() => setOpen(false)}
                     >
                         {item.label}
-                    </a>
+                    </Link>
                 ))}
             </nav>
         </>
