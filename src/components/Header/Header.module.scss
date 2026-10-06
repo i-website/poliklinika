@@ -1,0 +1,126 @@
+$header-height: 64px;
+$accent: #1d4ed8;
+$ink: #0f172a;
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
+    height: $header-height;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: #fff;
+    background: $accent;
+}
+
+.title {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.25;
+}
+
+.org {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.name {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.burger {
+    position: relative;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    background: transparent;
+    transition: background 0.2s ease;
+
+    &:hover {
+        opacity: 1;
+        background: rgba(255, 255, 255, 0.16);
+    }
+
+    span {
+        position: absolute;
+        left: 10px;
+        height: 2px;
+        border-radius: 2px;
+        background: #fff;
+        transition: transform 0.3s ease, width 0.3s ease, opacity 0.2s ease;
+
+        &:nth-child(1) { top: 13px; width: 20px; }
+        &:nth-child(2) { top: 19px; width: 14px; }
+        &:nth-child(3) { top: 25px; width: 20px; }
+    }
+}
+
+.burgerOpen {
+    span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    span:nth-child(2) { opacity: 0; }
+    span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+}
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    background: rgba(15, 23, 42, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.overlayOpen {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.menu {
+    position: fixed;
+    top: $header-height;
+    left: 0;
+    bottom: 0;
+    z-index: 20;
+    width: min(300px, 82vw);
+    padding: 8px 0;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform 0.3s ease, visibility 0.3s;
+}
+
+.menuOpen {
+    transform: translateX(0);
+    visibility: visible;
+}
+
+.link {
+    padding: 16px 20px;
+    border-left: 3px solid transparent;
+    font-size: 16px;
+    font-weight: 500;
+    color: $ink;
+    text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+
+    &:hover {
+        border-left-color: $accent;
+        background: #f1f5ff;
+        color: $accent;
+    }
+}
