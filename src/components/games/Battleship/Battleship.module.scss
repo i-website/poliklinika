@@ -1,0 +1,208 @@
+$accent: #1d4ed8;
+$ink: #0f172a;
+$muted: #64748b;
+$border: #cbd5e1;
+$red: #dc2626;
+
+.game {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.section {
+    padding: 10px 10px 12px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(29, 78, 216, 0.08);
+}
+
+.sectionTitle {
+    margin: 0 0 6px;
+    font-size: 15px;
+    color: $ink;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 20px repeat(10, 1fr);
+    gap: 2px;
+    max-width: 340px;
+    margin: 0 auto;
+}
+
+.gridOff {
+    opacity: 0.45;
+}
+
+.axis {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: $muted;
+}
+
+.cell {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    padding: 0;
+    border-radius: 3px;
+    background: #f1f5ff;
+    border: 1px solid $border;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    color: $ink;
+
+    &:disabled {
+        cursor: default;
+    }
+}
+
+.miss {
+    color: $muted;
+    font-size: 18px;
+}
+
+.theirHit {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: $red;
+}
+
+.ship {
+    background: $accent;
+    border-color: #1e40af;
+}
+
+.shipHit {
+    background: $accent;
+    border-color: #1e40af;
+    color: #fca5a5;
+}
+
+.sunk {
+    background: #991b1b;
+    border-color: #7f1d1d;
+    color: #fff;
+}
+
+.score {
+    margin-top: 10px;
+    font-size: 13px;
+    text-align: center;
+    color: $muted;
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.sizes {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+}
+
+.chip {
+    padding: 8px 2px;
+    border-radius: 10px;
+    background: #f1f5ff;
+    border: 1px solid $border;
+    font-size: 12px;
+    color: $ink;
+    white-space: nowrap;
+
+    &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+}
+
+.chipActive {
+    background: $accent;
+    border-color: $accent;
+    color: #fff;
+}
+
+.row {
+    display: flex;
+    gap: 8px;
+
+    > * {
+        flex: 1;
+    }
+}
+
+.secondary {
+    padding: 11px;
+    border-radius: 12px;
+    background: #eff4ff;
+    border: 1px solid $border;
+    font-size: 14px;
+    font-weight: 600;
+    color: $accent;
+}
+
+.primary {
+    padding: 14px;
+    border-radius: 12px;
+    background: $accent;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+
+    &:disabled {
+        background: #94a3b8;
+        cursor: not-allowed;
+    }
+}
+
+.hint {
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #fef3c7;
+    color: #92400e;
+    font-size: 13px;
+}
+
+.say {
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.say.miss {
+    background: #eef2f8;
+    color: $ink;
+}
+
+.say.hit {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.win {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.newGame {
+    padding: 12px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid $border;
+    font-size: 14px;
+    font-weight: 600;
+    color: $accent;
+}
