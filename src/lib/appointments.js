@@ -10,10 +10,10 @@ const defaultAppointment = () => {
     const date = nextWorkingDay(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 45));
     return {
         id: 'default',
-        doctorId: 'ivanov',
+        doctorId: 'morozov',
         date: date.toISOString(),
         time: '10:30',
-        complaint: 'Кашель и температура держатся уже третий день, слабость',
+        complaint: 'Заложен нос, болит горло и ухо уже неделю',
     };
 };
 
