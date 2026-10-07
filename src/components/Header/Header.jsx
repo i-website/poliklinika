@@ -6,7 +6,7 @@ import styles from './Header.module.scss';
 
 const MENU_ITEMS = [
     { label: 'Главная', href: '/home' },
-    { label: 'Записаться на приём', href: '#' },
+    { label: 'Записаться на приём', href: '/appointment' },
     { label: 'Мои записи', href: '#' },
     { label: 'Врачи', href: '#' },
     { label: 'Контакты', href: '#' },

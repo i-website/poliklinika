@@ -1,0 +1,300 @@
+$accent: #1d4ed8;
+$ink: #0f172a;
+$muted: #64748b;
+$border: #dbe5f5;
+
+.screen {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(160deg, #e8f1ff 0%, #f6fbff 100%);
+}
+
+.scroll {
+    position: absolute;
+    inset: 64px 0 0 0;
+    overflow-y: auto;
+}
+
+.content {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 24px 16px 40px;
+    color: $ink;
+}
+
+.title {
+    margin: 0 0 20px;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.doctors {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.doctor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 16px 8px;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid $border;
+    text-align: center;
+    color: inherit;
+    font: inherit;
+}
+
+.photo {
+    width: 88px;
+    height: 88px;
+    margin-bottom: 8px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #e2e8f0;
+}
+
+.photoSmall {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #e2e8f0;
+}
+
+.docName {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.docSpec {
+    font-size: 13px;
+    color: $muted;
+}
+
+.backBtn {
+    padding: 0 0 12px;
+    background: transparent;
+    font-size: 14px;
+    color: $accent;
+}
+
+.selected {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid $border;
+}
+
+.calendar {
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: 20px;
+    background: #fff;
+    border: 1px solid $border;
+    box-shadow: 0 6px 20px rgba(29, 78, 216, 0.08);
+
+    @media (min-width: 768px) {
+        max-width: 340px;
+        margin: 20px auto 0;
+        padding: 12px;
+
+        .cell {
+            font-size: 13px;
+        }
+    }
+}
+
+.calHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.calTitle {
+    font-size: 17px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.navBtn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f1f5ff;
+    color: $accent;
+    font-size: 22px;
+    line-height: 1;
+
+    &:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+}
+
+.weekday {
+    padding-bottom: 6px;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: $muted;
+}
+
+.cell {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 15px;
+    color: #b6c2d6;
+    text-decoration: line-through;
+}
+
+.today {
+    border: 1px solid $accent;
+    color: $accent;
+    text-decoration: none;
+}
+
+.nearest {
+    background: $accent;
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(29, 78, 216, 0.4);
+}
+
+.legend {
+    margin: 12px 0 0;
+    font-size: 13px;
+    text-align: center;
+    color: $muted;
+}
+
+.nearestCard {
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid $border;
+    border-left: 4px solid $accent;
+}
+
+.nearestLabel {
+    font-size: 13px;
+    color: $muted;
+}
+
+.nearestDate {
+    margin-top: 4px;
+    font-size: 18px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.nearestTime {
+    font-size: 15px;
+    font-weight: 600;
+    color: $accent;
+}
+
+.primary {
+    display: block;
+    width: 100%;
+    margin-top: 28px;
+    padding: 14px;
+    border-radius: 12px;
+    background: $accent;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+
+    &:disabled {
+        background: #94a3b8;
+        cursor: not-allowed;
+    }
+}
+
+.auction {
+    display: block;
+    width: 100%;
+    margin-top: 28px;
+    padding: 16px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #ff9500 0%, #ff3d00 100%);
+    color: #fff;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    box-shadow: 0 8px 22px rgba(255, 90, 0, 0.5);
+    text-align: center;
+    text-decoration: none;
+    animation: auctionPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes auctionPulse {
+    0%, 100% { box-shadow: 0 8px 22px rgba(255, 90, 0, 0.45); }
+    50% { box-shadow: 0 8px 32px rgba(255, 90, 0, 0.85); }
+}
+
+.primaryAfter {
+    margin-top: 12px;
+    background: transparent;
+    color: $accent;
+}
+
+.secondary {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 14px;
+    border-radius: 12px;
+    background: transparent;
+    color: $accent;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.done {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 32px;
+    text-align: center;
+}
+
+.check {
+    width: 72px;
+    height: 72px;
+    margin-bottom: 16px;
+    border-radius: 50%;
+    background: #16a34a;
+    color: #fff;
+    font-size: 40px;
+    line-height: 72px;
+}
+
+.doneText {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;
+    color: $muted;
+}
