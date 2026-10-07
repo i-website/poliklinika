@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { DOCTORS, doctorFullName } from '../../constants/doctors';
+import { addAppointment } from '../../lib/appointments';
+import { isWorkingDay, nextWorkingDay, TIME_SLOTS } from '../../lib/workingHours';
 import Header from '../Header/Header';
 import styles from './AppointmentScreen.module.scss';
 
-const SLOTS = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '14:00', '14:30', '15:00', '15:30', '16:00'];
 const MAX_MONTHS_AHEAD = 3;
 const WEEKDAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
@@ -23,13 +24,12 @@ const hashOf = (str) => {
 const sameDay = (a, b) =>
     a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 
-// Все окна заняты — свободна только ближайшая запись через 1–2 месяца (не в воскресенье)
+// Все окна заняты — свободна только ближайшая запись через 1–2 месяца (в будний день, в часы работы)
 const nearestAppointment = (doctorId) => {
     const h = hashOf(doctorId);
     const today = new Date();
-    const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 30 + (h % 31));
-    if (date.getDay() === 0) date.setDate(date.getDate() + 1);
-    return { date, time: SLOTS[h % SLOTS.length] };
+    const date = nextWorkingDay(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 30 + (h % 31)));
+    return { date, time: TIME_SLOTS[h % TIME_SLOTS.length] };
 };
 
 // Дни месяца с пустыми ячейками в начале, чтобы неделя начиналась с понедельника
@@ -43,6 +43,7 @@ export default function AppointmentScreen() {
     const [doctor, setDoctor] = useState(null);
     const [monthShift, setMonthShift] = useState(0);
     const [done, setDone] = useState(false);
+    const [complaint, setComplaint] = useState('');
 
     const today = useMemo(() => new Date(), []);
     const nearest = useMemo(() => (doctor ? nearestAppointment(doctor.id) : null), [doctor]);
@@ -60,6 +61,17 @@ export default function AppointmentScreen() {
     const reset = () => {
         back();
         setDone(false);
+        setComplaint('');
+    };
+
+    const book = () => {
+        addAppointment({
+            doctorId: doctor.id,
+            date: nearest.date.toISOString(),
+            time: nearest.time,
+            complaint: complaint.trim(),
+        });
+        setDone(true);
     };
 
     let content;
@@ -73,7 +85,7 @@ export default function AppointmentScreen() {
                     <br />
                     {DAY_MONTH.format(nearest.date)}, {nearest.time}
                 </p>
-                <Link href="/home" className={styles.primary}>На главную</Link>
+                <Link href="/my-appointments" className={styles.primary}>Мои записи</Link>
                 <button type="button" className={styles.secondary} onClick={reset}>
                     Записаться ещё
                 </button>
@@ -138,6 +150,7 @@ export default function AppointmentScreen() {
                                     key={i}
                                     className={[
                                         styles.cell,
+                                        !isWorkingDay(d) && styles.weekend,
                                         sameDay(d, nearest.date) && styles.nearest,
                                         sameDay(d, today) && styles.today,
                                     ].filter(Boolean).join(' ')}
@@ -149,7 +162,11 @@ export default function AppointmentScreen() {
                             )
                         )}
                     </div>
-                    <p className={styles.legend}>Свободных окон нет — все даты заняты</p>
+                    <p className={styles.legend}>
+                        Свободных окон нет — все даты заняты.
+                        <br />
+                        Приём по будням, с 8:00 до 20:00
+                    </p>
                 </div>
 
                 <div className={styles.nearestCard}>
@@ -158,11 +175,22 @@ export default function AppointmentScreen() {
                     <div className={styles.nearestTime}>{nearest.time}</div>
                 </div>
 
+                <label className={styles.complaint}>
+                    Жалоба (обязательно)
+                    <textarea
+                        rows={3}
+                        maxLength={500}
+                        placeholder="Опишите, что вас беспокоит"
+                        value={complaint}
+                        onChange={(e) => setComplaint(e.target.value)}
+                    />
+                </label>
+
                 <Link href={`/auction?doctor=${doctor.id}`} className={styles.auction}>
                     Участвовать в аукционе
                 </Link>
 
-                <button type="button" className={`${styles.primary} ${styles.primaryAfter}`} onClick={() => setDone(true)}>
+                <button type="button" className={`${styles.primary} ${styles.primaryAfter}`} disabled={!complaint.trim()} onClick={book}>
                     Записаться на {DAY_MONTH.format(nearest.date)}
                 </button>
             </>

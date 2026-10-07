@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { BID_STEP, BIDDERS, CARD_ERRORS } from '../../constants/bidders';
 import { DOCTORS, doctorFullName } from '../../constants/doctors';
+import { isWorkingDay } from '../../lib/workingHours';
 import Header from '../Header/Header';
 import styles from './AuctionScreen.module.scss';
 
@@ -29,7 +30,7 @@ const buildLots = (doctorId) => {
     const lots = [];
     for (let i = 1; lots.length < LOTS_COUNT; i++) {
         const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
-        if (date.getDay() === 0) continue;
+        if (!isWorkingDay(date)) continue;
         const h = hashOf(`${doctorId}${toKey(date)}`);
         lots.push({
             key: toKey(date),
