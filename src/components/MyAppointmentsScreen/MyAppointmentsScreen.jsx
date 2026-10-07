@@ -11,7 +11,40 @@ const WEEKDAY = new Intl.DateTimeFormat('ru-RU', { weekday: 'long' });
 const MONTH = new Intl.DateTimeFormat('ru-RU', { month: 'long' });
 const YEAR = new Intl.DateTimeFormat('ru-RU', { year: 'numeric' });
 
-function AppointmentCard({ appointment, doctor, onCancel, onRestore }) {
+// Что «происходит» в модалке: последнему в очереди пришло уведомление приложения и его телефон кричит.
+// Закрыть окно можно только кнопкой «Нашёлся» — ни фон, ни Escape не работают.
+const SEARCH_STEPS = [
+    'Отправляем уведомление последнему в очереди…',
+    'Уведомление пришло, телефон кричит на всю поликлинику',
+    'Он ищет телефон в сумке…',
+    'Уведомление слышно из коридора, идём на звук',
+    'Смахнуть уведомление нельзя: оно звучит, пока последнего не найдут',
+    'Телефон всё ещё кричит. Ищем последнего',
+];
+
+function LastInLine({ onClose }) {
+    const [step, setStep] = useState(0);
+
+    useEffect(() => {
+        const timer = setInterval(() => setStep((i) => (i + 1) % SEARCH_STEPS.length), 2500);
+        return () => clearInterval(timer);
+    }, []);
+
+    return (
+        <div className={styles.overlay}>
+            <div className={styles.modal} role="alertdialog">
+                <div className={styles.spinner} />
+                <div className={styles.modalTitle}>Ищем последнего</div>
+                <div className={styles.modalText}>{SEARCH_STEPS[step]}</div>
+                <button type="button" className={styles.modalClose} onClick={onClose}>
+                    Нашёлся
+                </button>
+            </div>
+        </div>
+    );
+}
+
+function AppointmentCard({ appointment, doctor, onCancel, onRestore, onLast }) {
     const date = new Date(appointment.date);
     const cancelled = appointment.cancelled;
 
@@ -51,9 +84,14 @@ function AppointmentCard({ appointment, doctor, onCancel, onRestore }) {
                         Восстановить запись
                     </button>
                 ) : (
-                    <button type="button" className={styles.cancel} onClick={onCancel}>
-                        Отменить запись
-                    </button>
+                    <>
+                        <button type="button" className={styles.last} onClick={onLast}>
+                            Кто последний?
+                        </button>
+                        <button type="button" className={styles.cancel} onClick={onCancel}>
+                            Отменить запись
+                        </button>
+                    </>
                 )}
             </div>
         </div>
@@ -63,6 +101,7 @@ function AppointmentCard({ appointment, doctor, onCancel, onRestore }) {
 export default function MyAppointmentsScreen() {
     // null — ещё не прочитали localStorage (на сервере его нет)
     const [list, setList] = useState(null);
+    const [searching, setSearching] = useState(false);
 
     useEffect(() => {
         setList(loadAppointments());
@@ -94,6 +133,7 @@ export default function MyAppointmentsScreen() {
                                 doctor={doctor}
                                 onCancel={() => cancel(a.id)}
                                 onRestore={() => restore(a.id)}
+                                onLast={() => setSearching(true)}
                             />
                         ) : null;
                     })}
@@ -103,6 +143,8 @@ export default function MyAppointmentsScreen() {
                     )}
                 </div>
             </div>
+
+            {searching && <LastInLine onClose={() => setSearching(false)} />}
         </div>
     );
 }

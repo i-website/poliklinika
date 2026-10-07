@@ -225,3 +225,80 @@ $border: #dbe5f5;
     font-weight: 600;
     color: #b91c1c;
 }
+
+.last {
+    display: block;
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 12px;
+    background: #eff4ff;
+    border: 1px solid $border;
+    font-size: 15px;
+    font-weight: 600;
+    color: $accent;
+}
+
+.last + .cancel {
+    margin-top: 8px;
+}
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(15, 23, 42, 0.55);
+}
+
+.modal {
+    width: 100%;
+    max-width: 340px;
+    padding: 28px 20px 20px;
+    border-radius: 20px;
+    background: #fff;
+    text-align: center;
+}
+
+.spinner {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 16px;
+    border: 5px solid $border;
+    border-top-color: $accent;
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.modalTitle {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.modalText {
+    min-height: 40px;
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.4;
+    color: $muted;
+}
+
+.modalClose {
+    display: block;
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    background: transparent;
+    border: 1px solid $border;
+    font-size: 15px;
+    font-weight: 600;
+    color: $muted;
+}
