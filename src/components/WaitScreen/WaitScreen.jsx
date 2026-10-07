@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Header from '../Header/Header';
 import Battleship from '../games/Battleship/Battleship';
 import CleanerSnake from '../games/CleanerSnake/CleanerSnake';
+import MedicalAlias from '../games/MedicalAlias/MedicalAlias';
 import styles from './WaitScreen.module.scss';
 
 const CATEGORIES = [
@@ -27,6 +28,14 @@ const GAMES = [
         title: 'Морской бой',
         description: 'Играйте вдвоём: телефоны заменяют бумагу.',
         Component: Battleship,
+    },
+    {
+        id: 'medical-alias',
+        category: 'neighbor',
+        icon: '🩺',
+        title: 'Шарады',
+        description: 'Весёлая игра на двоих: объясняйте соседу медицинские слова и смейтесь вместе.',
+        Component: MedicalAlias,
     },
 ];
 
