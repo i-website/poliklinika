@@ -1,4 +1,5 @@
 import './globals.scss';
+import CallPopup from '../components/CallPopup/CallPopup';
 
 export const metadata = {
   title: 'Поликлиника',
@@ -8,7 +9,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ru">
-      <body>{children}</body>
+      <body>
+        {children}
+        <CallPopup />
+      </body>
     </html>
   );
 }
