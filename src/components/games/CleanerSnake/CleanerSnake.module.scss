@@ -11,7 +11,7 @@ $ink: #0f172a;
 }
 
 .stats {
-    min-height: 38px; /* кнопка паузы и бейдж бахил появляются и исчезают, высота строки не должна меняться */
+    min-height: 48px; /* кнопка паузы и бейдж бахил появляются и исчезают, высота строки не должна меняться */
     display: flex;
     align-items: center;
     gap: 16px;
@@ -127,4 +127,11 @@ $ink: #0f172a;
         background: #38bdf8;
         transition: width 0.3s linear;
     }
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+    white-space: nowrap;
 }

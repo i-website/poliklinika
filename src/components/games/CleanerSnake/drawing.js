@@ -360,6 +360,41 @@ function lerpCell(cur, prev, t) {
     return { x: prev.x + (cur.x - prev.x) * t, y: prev.y + (cur.y - prev.y) * t };
 }
 
+const FAR = 10000;
+
+// при переходе через борт клетка наполовину выходит в одну стену и наполовину входит в противоположную:
+// возвращаем обе части, каждую со своей областью отсечения (по границе поля)
+function cellParts(cur, prev, t) {
+    const dx = prev ? cur.x - prev.x : 0;
+    const dy = prev ? cur.y - prev.y : 0;
+    const wrapX = Math.abs(dx) > 1;
+    const wrapY = Math.abs(dy) > 1;
+    if (!wrapX && !wrapY) return [{ cell: lerpCell(cur, prev, t), clip: null }];
+
+    const sx = wrapX ? (dx > 0 ? -1 : 1) : 0;
+    const sy = wrapY ? (dy > 0 ? -1 : 1) : 0;
+    const out = { x: prev.x + sx * t, y: prev.y + sy * t };
+    const inn = { x: cur.x - sx * (1 - t), y: cur.y - sy * (1 - t) };
+    if (wrapX) {
+        const clip = { x0: 0, x1: COLS * CELL, y0: -FAR, y1: FAR };
+        return [{ cell: out, clip }, { cell: inn, clip }];
+    }
+    return [
+        { cell: out, clip: { x0: -FAR, x1: FAR, y0: sy < 0 ? -PAD_TOP : 0, y1: ROWS * CELL } },
+        { cell: inn, clip: { x0: -FAR, x1: FAR, y0: 0, y1: ROWS * CELL } },
+    ];
+}
+
+function withClip(ctx, clip, fn) {
+    if (!clip) return fn();
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(clip.x0, clip.y0, clip.x1 - clip.x0, clip.y1 - clip.y0);
+    ctx.clip();
+    fn();
+    ctx.restore();
+}
+
 function drawSink(ctx, cell, scale = 1) {
     ctx.save();
     ctx.translate(cell.x * CELL + CELL / 2, cell.y * CELL + CELL / 2 + 2);
@@ -535,7 +570,7 @@ function drawDrain(ctx, board, dp, pos) {
     if (pop > 0) {
         ctx.save();
         ctx.globalAlpha = fade;
-        ctx.translate((COLS * CELL) / 2, ROWS * CELL * 0.38);
+        ctx.translate((COLS * CELL) / 2, (ROWS * CELL) / 2 - CELL * 0.4); // центр двух строк на середине поля
         ctx.rotate(-0.06);
         ctx.scale(back, back);
         ctx.textAlign = 'center';
@@ -556,6 +591,59 @@ function drawDrain(ctx, board, dp, pos) {
     }
 }
 
+const BUBBLE_MS = 1500;
+
+// облачко с репликой пойманного пациента
+function drawBubbles(ctx, board) {
+    const now = performance.now();
+    board.bubbles = board.bubbles.filter((b) => now - b.start < BUBBLE_MS);
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.lineJoin = 'round';
+    ctx.font = '800 17px sans-serif';
+    for (const b of board.bubbles) {
+        const age = (now - b.start) / BUBBLE_MS;
+        const pop = clamp01(age / 0.12);
+        ctx.globalAlpha = age > 0.75 ? 1 - (age - 0.75) / 0.25 : pop;
+
+        const w = ctx.measureText(b.text).width + 24;
+        const h = 32;
+        const below = b.y < ROWS - 1.5;
+        const cx = b.x * CELL + CELL / 2;
+        const tipY = b.y * CELL + CELL / 2 + (below ? 28 : -30);
+        const boxX = Math.min(COLS * CELL + PAD_X - w / 2 - 3, Math.max(w / 2 + 3 - PAD_X, cx));
+        const boxY = below ? tipY + 10 + h / 2 : tipY - 10 - h / 2;
+        const baseY = boxY + (below ? -h / 2 : h / 2);
+        const tx = Math.min(boxX + w / 2 - 16, Math.max(boxX - w / 2 + 16, cx));
+
+        ctx.save();
+        const scale = 0.6 + 0.4 * pop;
+        ctx.translate(cx, tipY);
+        ctx.scale(scale, scale);
+        ctx.translate(-cx, -tipY);
+        ctx.fillStyle = '#fff';
+        ctx.strokeStyle = '#1e3a8a';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.roundRect(boxX - w / 2, boxY - h / 2, w, h, 12);
+        ctx.fill();
+        ctx.stroke();
+        // хвостик к пациенту
+        ctx.beginPath();
+        ctx.moveTo(tx - 7, baseY);
+        ctx.lineTo(cx, tipY);
+        ctx.lineTo(tx + 7, baseY);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillRect(tx - 6, baseY - 1.5, 12, 3); // скрываем обводку в основании хвостика
+        ctx.fillStyle = '#1e293b';
+        ctx.fillText(b.text, boxX, boxY + 1);
+        ctx.restore();
+    }
+    ctx.restore();
+}
+
 const POPUP_MS = 1000;
 
 function drawPopups(ctx, board) {
@@ -571,8 +659,10 @@ function drawPopups(ctx, board) {
         const size = Math.round(CELL * (p.big ? 0.62 : 0.45) * pop);
         ctx.globalAlpha = age > 0.6 ? 1 - (age - 0.6) / 0.4 : 1;
         ctx.font = `900 ${size}px sans-serif`;
-        const x = p.x * CELL + CELL / 2;
-        const y = p.y * CELL + CELL * 0.1 - age * CELL * 0.9;
+        // не даём тексту уйти за край холста
+        const half = ctx.measureText(p.text).width / 2 + size * 0.15;
+        const x = Math.min(COLS * CELL + PAD_X - half, Math.max(half - PAD_X, p.x * CELL + CELL / 2));
+        const y = Math.max(size * 0.6 - PAD_TOP, p.y * CELL + CELL * 0.1 - age * CELL * 0.9);
         ctx.lineWidth = size * 0.28;
         ctx.strokeStyle = '#1e3a8a';
         ctx.strokeText(p.text, x, y);
@@ -609,7 +699,12 @@ export function draw(ctx, board, t = 1) {
     const draining = board.drain;
     const pos = snake.map((c, i) => lerpCell(c, prevSnake && prevSnake[Math.min(i, prevSnake.length - 1)], t));
 
-    if (!draining) for (let i = snake.length - 1; i > 0; i--) drawBucket(ctx, pos[i]);
+    const parts = (i) => cellParts(snake[i], prevSnake && prevSnake[Math.min(i, prevSnake.length - 1)], t);
+    if (!draining) {
+        for (let i = snake.length - 1; i > 0; i--) {
+            parts(i).forEach(({ cell, clip }) => withClip(ctx, clip, () => drawBucket(ctx, cell)));
+        }
+    }
     if (board.sink && !(board.sink.ttl < 14 && board.sink.ttl % 2)) drawSink(ctx, board.sink);
     if (board.bahily) drawBahily(ctx, board.bahily);
     if (patient) {
@@ -623,11 +718,15 @@ export function draw(ctx, board, t = 1) {
         drawPatient(ctx, { ...patient, x: at.x, y: at.y, sway: k * Math.PI });
         ctx.restore();
     }
-    if (board.shield > 0 && (board.shield > 10 || board.shield % 2)) drawShield(ctx, pos[0]);
     // лёгкое покачивание при ходьбе
     const bob = board.moving ? Math.abs(Math.sin((board.tick + t) * Math.PI)) * 3 : 0;
-    drawCleaner(ctx, { x: pos[0].x, y: pos[0].y - bob / CELL }, facing);
-    drawPopups(ctx, board);
+    parts(0).forEach(({ cell, clip }) => withClip(ctx, clip, () => {
+        if (board.shield > 0 && (board.shield > 10 || board.shield % 2)) drawShield(ctx, cell);
+        drawCleaner(ctx, { x: cell.x, y: cell.y - bob / CELL }, facing);
+    }));
     if (draining) drawDrain(ctx, board, clamp01((performance.now() - draining.start) / draining.duration), pos);
+    // цифры и реплики поверх всего
+    drawBubbles(ctx, board);
+    drawPopups(ctx, board);
     ctx.restore();
 }

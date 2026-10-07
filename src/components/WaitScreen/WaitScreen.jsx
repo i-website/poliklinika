@@ -9,8 +9,8 @@ const GAMES = [
     {
         id: 'cleaner-snake',
         icon: '🧹',
-        title: 'Уборщица',
-        description: 'Змейка по-больничному: собирайте следы грязи, а за вами едут вёдра.',
+        title: 'Уборка',
+        description: 'Змейка по-больничному: собирайте следы грязи.',
         Component: CleanerSnake,
     },
 ];

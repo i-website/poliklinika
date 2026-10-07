@@ -31,6 +31,13 @@ function spawnDirt(snake, dirts) {
     };
 }
 
+// на полу всегда должен быть хотя бы один след
+function ensureDirt(board) {
+    if (board.dirts.length) return;
+    const fresh = spawnDirt(board.snake, board.sink ? [board.sink] : []);
+    if (fresh) board.dirts.push(fresh);
+}
+
 function createBoard() {
     const snake = [
         { x: 4, y: 4 },
@@ -46,6 +53,7 @@ function createBoard() {
         patient: null,
         bahily: null,
         popups: [],
+        bubbles: [],
         sink: null,
         drain: null,
         shield: 0,
@@ -71,7 +79,15 @@ function addPopup(board, x, y, text, big = false) {
     board.popups.push({ x, y, text, big, start: performance.now() });
 }
 
-const SINK_CHANCE = 0.01; // шанс появления раковины на каждом тике
+const PATIENT_PHRASES = ['Где бахилы?', 'Опять натоптал'];
+
+// облачко с репликой над пойманным пациентом
+function addBubble(board, x, y) {
+    const text = PATIENT_PHRASES[Math.floor(Math.random() * PATIENT_PHRASES.length)];
+    board.bubbles.push({ x, y, text, start: performance.now() });
+}
+
+const SINK_CHANCE =0.01; // шанс появления раковины на каждом тике
 const SINK_TTL = 55; // сколько шагов раковина ждёт
 const SINK_MIN_BUCKETS = 3; // раковина появляется, когда есть что сливать
 const DRAIN_MS = 2400; // длительность слива и баннера
@@ -178,6 +194,7 @@ function catchPatient(board) {
     const reward = missed * PATIENT_REWARD;
 
     if (reward) addPopup(board, px, py, `+${reward}`, true);
+    addBubble(board, px, py);
     board.patient = null;
     return reward;
 }
@@ -216,6 +233,7 @@ export default function CleanerSnake() {
         board.snake = [board.snake[0]];
         board.prevSnake = null;
         board.drain = null;
+        ensureDirt(board);
         setScore((v) => v + bonus);
         setStatus('run');
     }, []);
@@ -315,6 +333,7 @@ export default function CleanerSnake() {
             if (hit) {
                 updatePatient(board);
                 updateBahily(board);
+                ensureDirt(board);
                 setShield(board.shield);
                 render();
                 return;
@@ -351,6 +370,7 @@ export default function CleanerSnake() {
                     bonus: snake.length - 1,
                 };
                 board.sink = null;
+                ensureDirt(board);
                 board.moving = false;
                 setStatus('drain');
                 render();
@@ -362,6 +382,7 @@ export default function CleanerSnake() {
             if (reward) setScore((v) => v + reward);
             updateSink(board);
             updateBahily(board);
+            ensureDirt(board);
             setShield(board.shield);
             render();
         }, delay);
@@ -413,8 +434,8 @@ export default function CleanerSnake() {
     return (
         <div className={styles.game}>
             <div className={styles.stats}>
-                <span>Убрано: <b>{score}</b></span>
-                <span>Рекорд: <b>{best}</b></span>
+                <span className={styles.stat}>Убрано<b>{score}</b></span>
+                <span className={styles.stat}>Рекорд<b>{best}</b></span>
                 {shield > 0 && (
                     <span className={styles.shield}>
                         Бахилы
@@ -440,7 +461,7 @@ export default function CleanerSnake() {
                         {status === 'idle' && (
                             <>
                                 <h3>Уборщица на смене</h3>
-                                <p>Собирайте следы грязи. С каждым пятном за вами тянется ещё одно ведро — не врежьтесь в них. Стены не помеха — выйдете с другой стороны. В бахилах можно не бояться вёдер: они не убьют, но и не пропустят. Поймайте пациента — получите вдвое больше очков, чем следов он не успел оставить.</p>
+                                <p>Собирайте следы грязи. С каждым пятном за вами тянется ещё одно ведро — не врежьтесь в них.</p>
                             </>
                         )}
                         {status === 'pause' && <h3>Пауза</h3>}
