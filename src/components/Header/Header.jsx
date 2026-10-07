@@ -9,6 +9,7 @@ const MENU_ITEMS = [
     { label: 'Записаться на приём', href: '/appointment' },
     { label: 'Мои записи', href: '/my-appointments' },
     { label: 'Моя карточка', href: '/my-card' },
+    { label: 'Стена', href: '/wall' },
     { label: 'Пока вы ждёте', href: '/wait' },
 ];
 

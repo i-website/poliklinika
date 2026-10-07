@@ -1,0 +1,128 @@
+$ink: #0f172a;
+
+.screen {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+    background: #d9cfba;
+}
+
+// Окно, через которое видна часть большой стены; стена по высоте равна экрану и листается в стороны
+.viewport {
+    position: absolute;
+    inset: 64px 0 0 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    cursor: grab;
+    user-select: none;
+
+    &:active {
+        cursor: grabbing;
+    }
+}
+
+// Сама стена (по умолчанию 1300×1000, масштабируется под экран): сверху штукатурка, снизу крашеная панель
+.wall {
+    position: relative;
+    flex-shrink: 0;
+    background:
+        linear-gradient(180deg, transparent 0, transparent 45%, rgba(0, 0, 0, 0.18) 45%, rgba(0, 0, 0, 0) 45.8%),
+        linear-gradient(180deg, #fdfcf9 0%, #f4f1ea 45%, #83cbad 45%, #88c7ad 100%);
+    box-shadow: inset 0 0 60px rgba(90, 70, 30, 0.1);
+
+    // фактура штукатурки
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(rgba(120, 100, 60, 0.08) 1px, transparent 1px) 0 0 / 7px 7px;
+        pointer-events: none;
+    }
+
+    // плинтус
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 18px;
+        background: #f6f1e4;
+        border-top: 2px solid #cfc6b0;
+        pointer-events: none;
+    }
+}
+
+.slot {
+    position: absolute;
+    padding: 0;
+    background: transparent;
+
+    &:hover {
+        opacity: 1;
+        transform: scale(1.04);
+        z-index: 2;
+    }
+}
+
+.poster {
+    position: relative;
+    filter: drop-shadow(0 6px 8px rgba(60, 40, 10, 0.3));
+}
+
+.image {
+    display: block;
+    width: 100%;
+    aspect-ratio: var(--aspect);
+    // у части плакатов в файле белые поля сверху и снизу — обрезаем их по aspect
+    object-fit: cover;
+    border: 8px solid #fff;
+    background: #fff;
+}
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(15, 23, 42, 0.7);
+}
+
+.zoom {
+    width: 100%;
+    max-width: 640px;
+    max-height: 100%;
+    overflow-y: auto;
+    padding-top: 8px;
+}
+
+.posterBig {
+    width: min(100%, calc((100vh - 150px) * var(--aspect)));
+    margin: 0 auto;
+    cursor: default;
+
+    .image {
+        border-width: 12px;
+    }
+}
+
+.close {
+    display: block;
+    width: 100%;
+    margin-top: 16px;
+    padding: 13px;
+    border-radius: 12px;
+    background: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    color: $ink;
+}
