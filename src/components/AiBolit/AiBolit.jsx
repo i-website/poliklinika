@@ -1,13 +1,18 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { GREETING, REPLIES, THINK_MAX_MS, THINK_MIN_MS } from '../../constants/aibolit';
 import AibolitFace from './AibolitFace';
 import styles from './AiBolit.module.scss';
 
+// Экраны до выхода на главную: вход и ввод кода MAX
+const HIDDEN_PATHS = ['/', '/login', '/max'];
+
 const randomBetween = (min, max) => min + Math.random() * (max - min);
 
 export default function AiBolit() {
+    const pathname = usePathname();
     const [open, setOpen] = useState(false);
     const [messages, setMessages] = useState([{ id: 0, from: 'bot', text: GREETING }]);
     const [text, setText] = useState('');
@@ -53,6 +58,10 @@ export default function AiBolit() {
             setThinking(false);
         }, randomBetween(THINK_MIN_MS, THINK_MAX_MS));
     };
+
+    // trailingSlash: true, поэтому путь приходит как '/login/'
+    const path = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+    if (HIDDEN_PATHS.includes(path)) return null;
 
     return (
         <>
