@@ -10,7 +10,7 @@ const CALL_DELAY_MS = 5000;
 const FALLBACK_COMPLAINT = 'Жалоба не указана';
 
 // Без аргумента — вызов по умолчанию, с id врача — этот врач и жалоба из его активной записи
-const pickCall = (doctorId) => {
+export const pickCall = (doctorId) => {
     const doctor = DOCTORS.find((d) => d.id === doctorId);
     if (!doctor) return DEFAULT_CALL;
 
@@ -22,6 +22,31 @@ const pickCall = (doctorId) => {
         complaint: appointment?.complaint || FALLBACK_COMPLAINT,
     };
 };
+
+export function CallView({ call }) {
+    const { specialty, surname, cabinet, complaint } = call;
+
+    return (
+        <div className={styles.overlay} role="alertdialog" aria-live="assertive">
+            <div className={styles.rings} aria-hidden="true">
+                <span />
+                <span />
+                <span />
+            </div>
+
+            <div className={styles.content}>
+                <div className={styles.kicker}>Вас вызывает</div>
+                <div className={styles.specialty}>{specialty}</div>
+                <div className={styles.surname}>{surname}</div>
+                <div className={styles.complaint}>
+                    <span>Жалоба</span>
+                    {complaint}
+                </div>
+                <div className={styles.cabinet}>Кабинет {cabinet}</div>
+            </div>
+        </div>
+    );
+}
 
 export default function CallPopup() {
     const [call, setCall] = useState(null);
@@ -48,26 +73,5 @@ export default function CallPopup() {
     }, []);
 
     if (!call) return null;
-    const { specialty, surname, cabinet, complaint } = call;
-
-    return (
-        <div className={styles.overlay} role="alertdialog" aria-live="assertive">
-            <div className={styles.rings} aria-hidden="true">
-                <span />
-                <span />
-                <span />
-            </div>
-
-            <div className={styles.content}>
-                <div className={styles.kicker}>Вас вызывает</div>
-                <div className={styles.specialty}>{specialty}</div>
-                <div className={styles.surname}>{surname}</div>
-                <div className={styles.complaint}>
-                    <span>Жалоба</span>
-                    {complaint}
-                </div>
-                <div className={styles.cabinet}>Кабинет {cabinet}</div>
-            </div>
-        </div>
-    );
+    return <CallView call={call} />;
 }

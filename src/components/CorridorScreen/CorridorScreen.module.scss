@@ -1,0 +1,232 @@
+// Ходьба: 3 шага по 1с = 3с, ноги в конце каждого цикла возвращаются в нейтраль,
+// поэтому на остановке человек стоит ровно
+$walk: 3s;
+$wave: 8s; // через 3с после звонка оба машут друг другу
+$ring: 5s;
+
+.screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  background: #0b1e4a;
+}
+
+.frame {
+  position: relative;
+  height: min(100vh, calc(100vw * 16 / 9));
+  aspect-ratio: 9 / 16;
+}
+
+.scene {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform: translateY(50px);
+}
+
+.walker {
+  transform: translate(-100px, 1330px);
+  animation: walk $walk linear forwards;
+}
+
+@keyframes walk {
+  to {
+    transform: translate(250px, 1330px);
+  }
+}
+
+.bob {
+  animation: bob 0.5s ease-in-out 6, hop 0.5s ease-in-out $wave infinite;
+}
+
+@keyframes bob {
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.limb {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+}
+
+.legFront {
+  animation: swing 1s ease-in-out 3;
+}
+
+.legBack {
+  animation: swing-rev 1s ease-in-out 3;
+}
+
+// Дошёл — поднимает руку с телефоном
+.armFront {
+  animation: swing-rev 1s ease-in-out 3, raise 0.6s ease-out $walk forwards;
+}
+
+@keyframes raise {
+  to { transform: rotate(-15deg); }
+}
+
+// Предплечье сгибается в локте
+.forearm {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  animation: bend 0.6s ease-out $walk forwards;
+}
+
+@keyframes bend {
+  to { transform: rotate(-120deg); }
+}
+
+.phone {
+  opacity: 0;
+  animation: show 0.01s $walk forwards, tap 0.45s ease-in-out calc($walk + 0.6s) infinite;
+}
+
+@keyframes show {
+  to { opacity: 1; }
+}
+
+@keyframes tap {
+  50% { transform: translateY(-1.5px); }
+}
+
+.screenGlow {
+  animation: glow 1.1s steps(1) infinite;
+}
+
+@keyframes glow {
+  50% { fill: #eff6ff; }
+}
+
+.armBack {
+  animation: swing 1s ease-in-out 3, up-fwd 0.4s ease-out $wave forwards,
+    wiggle-fwd 0.45s ease-in-out calc($wave + 0.4s) infinite alternate;
+}
+
+@keyframes swing {
+  25% { transform: rotate(18deg); }
+  75% { transform: rotate(-18deg); }
+}
+
+@keyframes swing-rev {
+  25% { transform: rotate(-18deg); }
+  75% { transform: rotate(18deg); }
+}
+
+// Дошёл — смотрит в телефон
+.head {
+  transform-box: fill-box;
+  transform-origin: 50% 90%;
+  animation: look 0.6s ease-out $walk forwards, lift 0.4s ease-out $wave forwards;
+}
+
+@keyframes look {
+  to { transform: rotate(12deg); }
+}
+
+.breath {
+  animation: breath 3.5s ease-in-out infinite;
+}
+
+@keyframes breath {
+  50% { transform: translateY(-3px); }
+}
+
+.idleA .breath { animation-delay: -1s; }
+.idleB .breath { animation-delay: -2.2s; }
+.idleC .breath { animation-delay: -0.4s; }
+
+.lamp {
+  animation: flicker 5s infinite;
+}
+
+@keyframes flicker {
+  0%, 92%, 100% { opacity: 1; }
+  94% { opacity: 0.65; }
+  96% { opacity: 0.95; }
+}
+
+
+// Через 1.5с после того, как вошедший достал телефон, у среднего на скамейке звонит
+
+.ringing {
+  opacity: 0;
+  animation: show 0.01s $ring forwards;
+}
+
+.ringPhone {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: buzz 0.12s linear $ring infinite alternate;
+}
+
+@keyframes buzz {
+  from { transform: translateX(-1.5px) rotate(-5deg); }
+  to { transform: translateX(1.5px) rotate(5deg); }
+}
+
+.waveA,
+.waveB,
+.waveC {
+  fill: none;
+  stroke: #2563eb;
+  stroke-width: 5;
+  stroke-linecap: round;
+  animation: wave 0.9s ease-out infinite backwards;
+}
+
+.waveA { animation-delay: $ring; }
+.waveB { animation-delay: calc($ring + 0.2s); }
+.waveC { animation-delay: calc($ring + 0.4s); }
+
+@keyframes wave {
+  0% { opacity: 0; }
+  30% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+// Через 3с после звонка оба с телефонами радостно машут друг другу
+
+@keyframes hop {
+  50% { transform: translateY(-9px); }
+}
+
+@keyframes up-fwd {
+  to { transform: rotate(-150deg); }
+}
+
+@keyframes wiggle-fwd {
+  from { transform: rotate(-135deg); }
+  to { transform: rotate(-168deg); }
+}
+
+@keyframes lift {
+  to { transform: rotate(0deg); }
+}
+
+.sitterWave {
+  animation: up-back 0.4s ease-out $wave forwards,
+    wiggle-back 0.45s ease-in-out calc($wave + 0.4s) infinite alternate;
+}
+
+@keyframes up-back {
+  to { transform: rotate(150deg); }
+}
+
+@keyframes wiggle-back {
+  from { transform: rotate(135deg); }
+  to { transform: rotate(168deg); }
+}
+
+.smile {
+  fill: none;
+  stroke: #172554;
+  stroke-width: 3;
+  stroke-linecap: round;
+  opacity: 0;
+  animation: show 0.01s $wave forwards;
+}
